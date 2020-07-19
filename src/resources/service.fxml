@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="631.0" prefWidth="827.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ServiceAdvisorController">
+   <children>
+      <Label layoutX="229.0" layoutY="54.0" text="Welcome Service Advisor" textAlignment="CENTER">
+         <font>
+            <Font size="29.0" />
+         </font></Label>
+      <Button fx:id="btnnewcust" layoutX="348.0" layoutY="155.0" mnemonicParsing="false" onAction="#register" text="Add New Customer" />
+      <Button fx:id="btncreatejobsheet" layoutX="355.0" layoutY="269.0" mnemonicParsing="false" onAction="#createJobSheet" text="Create Job Sheet" />
+      <Button fx:id="btnpayments" layoutX="376.0" layoutY="327.0" mnemonicParsing="false" onAction="#payment" text="Payments" />
+      <Button fx:id="btnaddvehicle" layoutX="355.0" layoutY="211.0" mnemonicParsing="false" onAction="#register_vehicle" text="Add New Vehicle" />
+   </children>
+</AnchorPane>

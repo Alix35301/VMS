@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.TilePane?>
+
+<AnchorPane prefHeight="631.0" prefWidth="821.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CustomerController">
+   <children>
+      <Label fx:id="lblcustomer" layoutX="46.0" layoutY="47.0" prefHeight="16.0" prefWidth="252.0" text="Welcome " />
+      <TilePane layoutX="47.0" layoutY="85.0" prefHeight="94.0" prefWidth="79.0">
+         <children>
+            <TableView fx:id="tStatus" prefHeight="200.0" prefWidth="720.0" />
+         </children>
+      </TilePane>
+      <Button fx:id="btnrefresh" layoutX="624.0" layoutY="49.0" mnemonicParsing="false" onAction="#onclickRefresh" text="Refresh" />
+      <Button fx:id="btnlogout" layoutX="700.0" layoutY="49.0" mnemonicParsing="false" onAction="#onClickLogout" text="Logout" />
+   </children>
+</AnchorPane>
