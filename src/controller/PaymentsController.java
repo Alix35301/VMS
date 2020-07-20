@@ -2,6 +2,7 @@ package controller;
 
 import components.AlertDiaglog;
 import components.Auth;
+import components.Invoice;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -35,9 +36,11 @@ public class PaymentsController {
     @FXML
     private Text modelTxt, emailTxt, contactTxt, cust_nameTxt, chassisTxt, reg_dateTxt;
     public String vehicle_reg = null;
+    public String jobsheetid = null;
+    public String customer_id = null;
 
     public void searchVehicle(ActionEvent event) throws IOException, SQLException {
-        String customer_id = null, model = null, chassis_num = null,
+        String model = null, chassis_num = null,
             reg_date = null, email = null, phone = null, address = null, customer_name = null;
         boolean registered = false;
 
@@ -101,10 +104,19 @@ public class PaymentsController {
         Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/VMS?autoReconnect=true&useSSL=false", "root", "1234");
         ObservableList<ObservableList> data = FXCollections.observableArrayList();
 
-        String sql = "SELECT job_summery, job_comments, update_date from VMS.JOBS where job_status = 'COMPLETED' and vehicle_reg=? ";
-        PreparedStatement preparedStatement = con.prepareStatement(sql);
+        String sql1 = "SELECT id from VMS.JOBSHEET where vehicle_reg=? and status = 'PENDING'";
+        PreparedStatement preparedStatement = con.prepareStatement(sql1);
         preparedStatement.setString(1, vehicle_reg);
-        ResultSet resultSet = preparedStatement.executeQuery();
+        ResultSet r = preparedStatement.executeQuery();
+
+        while (r.next()) {
+            jobsheetid = r.getString(1);
+        }
+
+        String sql = "SELECT job_summery, job_comments, job_status from VMS.JOBS where jobsheetId=?";
+        PreparedStatement p = con.prepareStatement(sql);
+        p.setString(1, jobsheetid);
+        ResultSet resultSet = p.executeQuery();
 
         TableColumn col = null;
         for (int i = 0; i < resultSet.getMetaData().getColumnCount(); i++) {
@@ -123,9 +135,10 @@ public class PaymentsController {
             //Iterate Row
             ObservableList<String> row = FXCollections.observableArrayList();
             for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
-                Text text = new Text(resultSet.getString(i));
-                text.wrappingWidthProperty().bind(col.widthProperty());
-                row.add(text.getText());
+//                System.out.println(resultSet.getString(i));
+                TextArea textArea = new TextArea(resultSet.getString(i));
+//                textArea.wrappingWidthProperty().bind(col.widthProperty());
+                row.add(textArea.getText());
             }
             data.add(row);
 
@@ -139,12 +152,12 @@ public class PaymentsController {
 
     public void addService(ActionEvent event) throws SQLException {
         boolean productFound = false;
-        String productCode = null, price = null;
+        String product_id = null, productCode = null, price = null;
         ObservableList<ObservableList> data = FXCollections.observableArrayList();
 
         Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/VMS?autoReconnect=true&useSSL=false", "root", "1234");
 
-        String sql = "SELECT product_code, price from VMS.PRODUCTS where product_code = ?";
+        String sql = "SELECT id, product_code, price from VMS.PRODUCTS where product_code = ?";
         PreparedStatement preparedStatement = con.prepareStatement(sql);
         preparedStatement.setString(1, productName.getText());
         ResultSet resultSet = preparedStatement.executeQuery();
@@ -165,12 +178,15 @@ public class PaymentsController {
 
         while (resultSet.next()) {
             productFound = true;
-            productCode = resultSet.getString(1);
-            price = resultSet.getString(2);
-
-
-
+            product_id = resultSet.getString(1);
+            productCode = resultSet.getString(2);
+            price = resultSet.getString(3);
         }
+
+        // creating invoice if not already created
+        Invoice invoice = new Invoice();
+        invoice.setCustomer_id(customer_id);
+        invoice.setVehicle_reg(vehicle_reg);
 
         ObservableList<String> row = FXCollections.observableArrayList();
         for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
@@ -182,6 +198,26 @@ public class PaymentsController {
         paymentsTable.setItems(data);
 
 
+    }
+
+    public void createInvoice(Invoice invoice) throws SQLException {
+        Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/VMS?autoReconnect=true&useSSL=false", "root", "1234");
+
+    }
+
+    public boolean invoiceExists(Invoice invoice) throws SQLException {
+        Boolean exists = false;
+        Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/VMS?autoReconnect=true&useSSL=false", "root", "1234");
+        String query = "SELECT id FROM VMS.INVOICE WHERE customer_id = ? AND vehicle_reg =? and status = 'UNCLEARED'";
+        PreparedStatement p = con.prepareStatement(query);
+        p.setString(1, invoice.getCustomer_id());
+        p.setString(2, invoice.getVehicle_reg());
+        ResultSet r = p.executeQuery();
+
+        while (r.next()) {
+            exists = true;
+        }
+        return exists;
     }
 
 

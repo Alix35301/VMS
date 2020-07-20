@@ -35,6 +35,7 @@ public class UpdateJobsheetController {
     @FXML
     Text modelTxt, emailTxt, contactTxt, cust_nameTxt, chassisTxt, reg_dateTxt;
     public String vehicle_reg = null;
+    String jobSheetId=null;
 
     boolean dataadded = false;
 
@@ -110,17 +111,28 @@ public class UpdateJobsheetController {
 
         List<String> jobs= new ArrayList<>();
         Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/VMS?autoReconnect=true&useSSL=false", "root", "1234");
-        String sql = "SELECT job_summery FROM VMS.JOBS where vehicle_reg = ? and job_status = 'PENDING' and mech_assigned=?";
-        PreparedStatement p1 = con.prepareStatement(sql);
-        p1.setString(1, vehicle_reg);
-        p1.setString(2,JobsheetController.getMechanicID(Auth.getUser()));
+        String sql2 = "SELECT id FROM VMS.JOBSHEET where mech_assigned = ? and status = 'PENDING' ";
+        PreparedStatement p1 = con.prepareStatement(sql2);
+        p1.setString(1,JobsheetController.getMechanicID(Auth.getUser()));
         ResultSet resultSet=p1.executeQuery();
 
-        while (resultSet.next()){
-            jobs.add(resultSet.getString(1));
+        jobSheetId=null;
+            while (resultSet.next()){
+                jobSheetId=resultSet.getString(1);
+            }
+
+            String sql = "SELECT job_summery FROM VMS.JOBS where job_status = 'PENDING' and jobsheetId = ?";
+            PreparedStatement p3 = con.prepareStatement(sql);
+            p3.setString(1, jobSheetId);
+            ResultSet rs=p3.executeQuery();
+
+
+            while (rs.next()){
+            jobs.add(rs.getString(1));
 
         }
         ObservableList<String> ob = FXCollections.observableArrayList(jobs);
+            con.close();
 
         return  ob;
 
@@ -149,11 +161,10 @@ public class UpdateJobsheetController {
         public void buildData() throws SQLException {
         Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/VMS?autoReconnect=true&useSSL=false", "root", "1234");
         ObservableList<ObservableList> data= FXCollections.observableArrayList();
-
-        String sql = "SELECT job_summery, job_comments, job_status from VMS.JOBS where job_status = 'PENDING' and mech_assigned=? and vehicle_reg=? ";
+        String sql = "SELECT job_summery, job_comments, job_status from VMS.JOBS where jobsheetId=?";
         PreparedStatement preparedStatement = con.prepareStatement(sql);
-        preparedStatement.setString(1,JobsheetController.getMechanicID(Auth.getUser()));
-        preparedStatement.setString(2, vehicle_reg);
+        String sql2 = "SELECT id FROM VMS.JOBSHEET WHERE where vehicle_reg = ? and status ='PENDING'";
+        preparedStatement.setString(1, vehicle_reg);
         ResultSet resultSet = preparedStatement.executeQuery();
 
 
@@ -166,15 +177,7 @@ public class UpdateJobsheetController {
                     return new SimpleStringProperty(param.getValue().get(j).toString());
                 }
             });
-            if (i==0){
-                col.prefWidthProperty().bind(jobstatus.widthProperty().multiply(0.3));
-            }else if (i==1){
-                col.prefWidthProperty().bind(jobstatus.widthProperty().multiply(0.5));
 
-            }else if (i==2){
-                col.prefWidthProperty().bind(jobstatus.widthProperty().multiply(0.3));
-            }
-            col.setResizable(false);
             jobstatus.getColumns().addAll(col);
         }
 
