@@ -5,7 +5,47 @@ package components;
  * @created_on 7/21/20
  */
 public class Invoice {
-    String id, vehicle_reg,customer_id;
+    String id, vehicleReg, customerId,createdUser,createdDate,status, paymentMethod, amountGiven;
+
+    public String getAmountGiven() {
+        return amountGiven;
+    }
+
+    public void setAmountGiven(String amountGiven) {
+        this.amountGiven = amountGiven;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
+    public String getCreatedUser() {
+        return createdUser;
+    }
+
+    public void setCreatedUser(String createdUser) {
+        this.createdUser = createdUser;
+    }
+
+    public String getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(String createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     public String getId() {
         return id;
@@ -15,19 +55,19 @@ public class Invoice {
         this.id = id;
     }
 
-    public String getVehicle_reg() {
-        return vehicle_reg;
+    public String getVehicleReg() {
+        return vehicleReg;
     }
 
-    public void setVehicle_reg(String vehicle_reg) {
-        this.vehicle_reg = vehicle_reg;
+    public void setVehicleReg(String vehicleReg) {
+        this.vehicleReg = vehicleReg;
     }
 
-    public String getCustomer_id() {
-        return customer_id;
+    public String getCustomerId() {
+        return customerId;
     }
 
-    public void setCustomer_id(String customer_id) {
-        this.customer_id = customer_id;
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
     }
 }

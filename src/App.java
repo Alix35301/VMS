@@ -18,7 +18,7 @@ public class App extends Application {
             Parent root =loader.load();
             root.setStyle("-fx-background-color: linear-gradient(#4848ff,rgba(58,139,121,0.04))");
             primaryStage.setResizable(false);
-            primaryStage.setScene(new Scene(root, 827, 631));
+            primaryStage.setScene(new Scene(root, 1000, 800));
 
             primaryStage.show();
 

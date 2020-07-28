@@ -1,18 +1,13 @@
 package controller;
 
-import components.AlertDiaglog;
-import components.Auth;
-import components.Helpers;
-import components.Jobsheet;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
+import components.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.text.Text;
-import javafx.util.Callback;
 
 import java.io.IOException;
 import java.sql.*;
@@ -25,6 +20,8 @@ import java.util.List;
  */
 public class UpdateJobsheetController {
     @FXML
+    private ChoiceBox<String> paymentOptionCb;
+    @FXML
     private TableView jobstatus;
     @FXML
     private TextField searchTF;
@@ -35,9 +32,27 @@ public class UpdateJobsheetController {
     @FXML
     Text modelTxt, emailTxt, contactTxt, cust_nameTxt, chassisTxt, reg_dateTxt;
     public String vehicle_reg = null;
-    String jobSheetId=null;
 
+    String jobSheetId=null;
     boolean dataadded = false;
+
+    public void initialize(){
+        TableColumn<String, Jobsheet.Job> column1 = new TableColumn<>("Job Summery");
+        column1.setCellValueFactory(new PropertyValueFactory<>("jobSummmery"));
+
+        TableColumn<String, Jobsheet.Job> column2 = new TableColumn<>("Job Comments");
+        column2.setCellValueFactory(new PropertyValueFactory<>("jobDesc"));
+
+        TableColumn<String, Jobsheet.Job> column3 = new TableColumn<>("Status");
+        column3.setCellValueFactory(new PropertyValueFactory<>("jobStatus"));
+
+
+        jobstatus.getColumns().addAll(column1,column2,column3);
+        jobstatus.setPlaceholder(new Label("No jobs found for this vehicle"));
+        jobstatus.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY );
+
+
+    }
 
 
     public void searchVehicle(ActionEvent event) throws IOException, SQLException {
@@ -92,7 +107,7 @@ public class UpdateJobsheetController {
             }catch (Exception e){
                 e.printStackTrace();
             }
-            jobstatus.getColumns().clear();
+//            jobstatus.getColumns().clear();
             jobstatus.getItems().clear();
             buildData();
         } else if (searchTF.getText().trim().isEmpty()) {
@@ -112,28 +127,31 @@ public class UpdateJobsheetController {
         List<String> jobs= new ArrayList<>();
         Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/VMS?autoReconnect=true&useSSL=false", "root", "1234");
         String sql2 = "SELECT id FROM VMS.JOBSHEET where mech_assigned = ? and status = 'PENDING' ";
+
         PreparedStatement p1 = con.prepareStatement(sql2);
         p1.setString(1,JobsheetController.getMechanicID(Auth.getUser()));
+            System.out.println(p1.toString());
         ResultSet resultSet=p1.executeQuery();
 
         jobSheetId=null;
             while (resultSet.next()){
                 jobSheetId=resultSet.getString(1);
+                System.out.println(jobSheetId);
             }
 
             String sql = "SELECT job_summery FROM VMS.JOBS where job_status = 'PENDING' and jobsheetId = ?";
             PreparedStatement p3 = con.prepareStatement(sql);
             p3.setString(1, jobSheetId);
+            System.out.println(p3.toString());
             ResultSet rs=p3.executeQuery();
 
 
             while (rs.next()){
             jobs.add(rs.getString(1));
+                System.out.println(rs.getString(1));
 
         }
         ObservableList<String> ob = FXCollections.observableArrayList(jobs);
-            con.close();
-
         return  ob;
 
     }
@@ -145,15 +163,15 @@ public class UpdateJobsheetController {
         Jobsheet.Job updateJob = new Jobsheet.Job(remarks.getText());
         PreparedStatement p1 = con.prepareStatement(sql);
         System.out.println(p1.toString());
-        p1.setString(1,updateJob.getJob_desc());
+        p1.setString(1,updateJob.getJobDesc());
         p1.setString(2, "COMPLETED");
         p1.setString(3, Helpers.getTime());
         p1.setString(4, selectJob.getValue());
         p1.executeUpdate();
 
-        jobstatus.getColumns().clear();
         jobstatus.getItems().clear();
         buildData();
+        AlertDiaglog.infoBox("Jobsheet has been updated!","Success", Alert.AlertType.INFORMATION);
 
     }
 
@@ -163,35 +181,23 @@ public class UpdateJobsheetController {
         ObservableList<ObservableList> data= FXCollections.observableArrayList();
         String sql = "SELECT job_summery, job_comments, job_status from VMS.JOBS where jobsheetId=?";
         PreparedStatement preparedStatement = con.prepareStatement(sql);
-        String sql2 = "SELECT id FROM VMS.JOBSHEET WHERE where vehicle_reg = ? and status ='PENDING'";
-        preparedStatement.setString(1, vehicle_reg);
+        preparedStatement.setString(1, jobSheetId);
+            System.out.println(preparedStatement.toString());
         ResultSet resultSet = preparedStatement.executeQuery();
 
 
-        for(int i=0 ; i<resultSet.getMetaData().getColumnCount(); i++){
-            //We are using non property style for making dynamic table
-            final int j = i;
-            TableColumn col = new TableColumn(resultSet.getMetaData().getColumnName(i+1));
-            col.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<ObservableList,String>, ObservableValue<String>>(){
-                public ObservableValue<String> call(TableColumn.CellDataFeatures<ObservableList, String> param) {
-                    return new SimpleStringProperty(param.getValue().get(j).toString());
-                }
-            });
-
-            jobstatus.getColumns().addAll(col);
-        }
-
+        Jobsheet.Job job = new Jobsheet.Job();
         while(resultSet.next()){
-            //Iterate Row
-            ObservableList<String> row = FXCollections.observableArrayList();
-            for(int i=1 ; i<=resultSet.getMetaData().getColumnCount(); i++){
-                //Iterate Column
-                row.add(resultSet.getString(i));
+
+            job.setJobSummmery(resultSet.getString(1));
+            job.setJobDesc(resultSet.getString(2));
+            job.setJobStatus(resultSet.getString(3));
+            jobstatus.getItems().add(job);
             }
-            data.add(row);
+
+
 
         }
 
-        jobstatus.setItems(data);
     }
-}
+

@@ -1,12 +1,7 @@
 package components;
 
-import com.itextpdf.text.Document;
-import com.itextpdf.text.Image;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.pdf.PdfWriter;
 
 import java.io.FileOutputStream;
-import java.net.URL;
 import java.util.ArrayList;
 
 /**
@@ -16,74 +11,83 @@ import java.util.ArrayList;
 public class Jobsheet {
     public static ArrayList<Job>jobsheet = new ArrayList<>();
 
-    public static class Job{
-        public String getJob_summmery() {
-            return job_summmery;
-        }
+    String id, vehicle_reg, customer_id, mech_assigned, status;
 
-        public void setJob_summmery(String job_summmery) {
-            this.job_summmery = job_summmery;
-        }
-
-        public String getJob_desc() {
-            return job_desc;
-        }
-
-        public void setJob_desc(String job_desc) {
-            this.job_desc = job_desc;
-        }
-
-        String job_summmery, job_desc,mechanic_id;
-
-        public String getMechanic_id() {
-            return mechanic_id;
-        }
-
-        public void setMechanic_id(String mechanic_id) {
-            this.mechanic_id = mechanic_id;
-        }
-
-        public Job(String job_summery, String job_desc, String mechanic_id){
-            this.job_desc =job_desc;
-            this.job_summmery =job_summery;
-            this.mechanic_id =mechanic_id;
-        }
-
-        public Job(String job_desc){
-            this.job_desc =job_desc;
-        }
-
+    public String getId() {
+        return id;
     }
 
-    public static void toPDF(){
-        //TODO implement print jobsheet function
+    public void setId(String id) {
+        this.id = id;
+    }
 
-        Document document = new Document();
-        try
-        {
-            PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream("AddImageExample.pdf"));
+    public String getVehicle_reg() {
+        return vehicle_reg;
+    }
 
-            document.open();
-            document.add(new Paragraph("Image Example"));
+    public void setVehicle_reg(String vehicle_reg) {
+        this.vehicle_reg = vehicle_reg;
+    }
 
-            //Add Image
-            Image image1 = Image.getInstance("resources/company_logo.png");
-            //Fixed Positioning
-            image1.setAbsolutePosition(100f, 550f);
-            //Scale to new height and new width of image
-            image1.scaleAbsolute(200, 200);
-            //Add to document
-            document.add(image1);
+    public String getCustomer_id() {
+        return customer_id;
+    }
 
-//            String imageUrl = "/resources/company_logo.png";
-//            Image image2 = Image.getInstance(new URL(imageUrl));
+    public void setCustomer_id(String customer_id) {
+        this.customer_id = customer_id;
+    }
 
-            document.close();
-            writer.close();
-        } catch (Exception e)
-        {
-            e.printStackTrace();
+    public String getMech_assigned() {
+        return mech_assigned;
+    }
+
+    public void setMech_assigned(String mech_assigned) {
+        this.mech_assigned = mech_assigned;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public static enum JobSheetStatsus{
+        PENDING,
+        UPDATED
+    }
+
+    public static class Job{
+
+        String jobSummmery, jobDesc,jobStatus;
+
+        public Job(){};
+
+        public Job(String job_summery, String jobDesc, String jobStatus){
+            this.jobDesc = jobDesc;
+            this.jobSummmery =job_summery;
+            this.jobStatus =jobStatus;
         }
 
+        public String getJobSummmery() {return jobSummmery; }
+
+        public void setJobSummmery(String jobSummmery) {
+            this.jobSummmery = jobSummmery;
+        }
+
+        public String getJobDesc() {
+            return jobDesc;
+        }
+
+        public void setJobDesc(String jobDesc) {
+            this.jobDesc = jobDesc;
+        }
+
+        public Job(String jobDesc){this.jobDesc = jobDesc;}
+
+        public String getJobStatus() { return jobStatus; }
+
+        public void setJobStatus(String jobStatus) {this.jobStatus = jobStatus; }
     }
 }

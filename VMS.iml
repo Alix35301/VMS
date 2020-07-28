@@ -9,6 +9,8 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="lib" level="project" />
     <orderEntry type="library" name="mysql:mysql-connector-java:8.0.19" level="project" />
-    <orderEntry type="library" name="com.itextpdf.maven:itextdoc:2.0.0" level="project" />
+    <orderEntry type="library" name="com.itextpdf:layout:7.1.2" level="project" />
+    <orderEntry type="library" name="io-7.1.11" level="project" />
+    <orderEntry type="library" name="lib1" level="project" />
   </component>
 </module>

@@ -1,30 +1,18 @@
 package controller;
 
-import com.google.inject.internal.util.$SourceProvider;
-import components.AlertDiaglog;
-import components.Auth;
-import components.Helpers;
-import components.Jobsheet;
+import components.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.sql.*;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,9 +28,11 @@ public class JobsheetController {
     @FXML
     TextArea addcommTA;
     @FXML
-    Text modelTxt, emailTxt, contactTxt, cust_nameTxt, chassisTxt, reg_dateTxt;
+    Text modelTxt, emailTxt, contactTxt, cust_nameTxt,cust_type_txt,chassisTxt, reg_dateTxt;
     public String vehicle_reg = null;
     public String customer_id = null;
+    Customer customer = new Customer();
+    Vehicle vehicle = new Vehicle();
 
 
     // TODO FIX FORM ODER
@@ -64,8 +54,7 @@ public class JobsheetController {
     }
 
     public void searchVehicle(ActionEvent event) throws IOException, SQLException {
-        String model = null, chassis_num = null,
-            reg_date = null, email = null, phone = null, address = null, customer_name = null;
+
         boolean registered = false;
 
         Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/VMS?autoReconnect=true&useSSL=false", "root", "1234");
@@ -76,23 +65,26 @@ public class JobsheetController {
 
         while (resultSet.next()) {
             registered = true;
-            customer_id = resultSet.getString(2);
-            model = resultSet.getString(3);
-            vehicle_reg = resultSet.getString(4);
-            chassis_num = resultSet.getString(5);
-            reg_date = resultSet.getString(6);
+            vehicle.setCustomer_id(resultSet.getString(2));
+            vehicle.setModel(resultSet.getString(3));
+            vehicle.setVehicle_reg(resultSet.getString(4));
+            vehicle.setChassis_num(resultSet.getString(5));
+            vehicle.setReg_date(resultSet.getString(6));
+
         }
         if (registered) {
-            String sql2 = "SELECT cust_name, email, phone, address FROM VMS.CUSTOMERS WHERE customer_id=?";
+            String sql2 = "SELECT cust_name, email, phone, address, customer_type FROM VMS.CUSTOMERS WHERE customer_id=?";
             PreparedStatement statement = con.prepareStatement(sql2);
-            statement.setString(1, customer_id);
+            statement.setString(1, vehicle.getCustomer_id());
             ResultSet resultSet1 = statement.executeQuery();
             while (resultSet1.next()) {
-                customer_name = resultSet1.getString(1);
-                email = resultSet1.getString(2);
-                phone = resultSet1.getString(3);
-                address = resultSet1.getString(4);
+                customer.setName(resultSet1.getString(1));
+                customer.setEmail(resultSet1.getString(2));
+                customer.setPhone(resultSet1.getString(3));
+                customer.setAddress(resultSet1.getString(4));
+                customer.setType(customer.getType(Integer.parseInt(resultSet1.getString(5))));
             }
+            cust_type_txt.setVisible(true);
             contactTxt.setVisible(true);
             emailTxt.setVisible(true);
             modelTxt.setVisible(true);
@@ -100,12 +92,13 @@ public class JobsheetController {
             chassisTxt.setVisible(true);
             reg_dateTxt.setVisible(true);
 
-            modelTxt.setText(model);
-            cust_nameTxt.setText(customer_name);
-            chassisTxt.setText(chassis_num);
-            reg_dateTxt.setText(reg_date);
-            emailTxt.setText(email);
-            contactTxt.setText(phone);
+            cust_type_txt.setText(customer.getType());
+            modelTxt.setText(vehicle.getModel());
+            cust_nameTxt.setText(customer.getName());
+            chassisTxt.setText(vehicle.getChassis_num());
+            reg_dateTxt.setText(vehicle.getReg_date());
+            emailTxt.setText(customer.getEmail());
+            contactTxt.setText(customer.getPhone());
 
 
         } else if (searchTF.getText().trim().isEmpty()) {
@@ -142,31 +135,34 @@ public class JobsheetController {
         if (!searchTF.getText().trim().isEmpty()) {
             if (Jobsheet.jobsheet.size() > 0) {
                 Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/VMS?autoReconnect=true&useSSL=false", "root", "1234");
-                if (!checkJsPending(vehicle_reg,customer_id)) {
+                if (!checkJsPending(vehicle)) {
                     String sqlJobsheet = "INSERT INTO VMS.JOBSHEET(vehicle_reg, customer_id,mech_assigned, status) VALUES (?,?,?,?)";
                     PreparedStatement p2 = con.prepareStatement(sqlJobsheet);
-                    p2.setString(1, vehicle_reg);
-                    p2.setString(2, customer_id);
+                    p2.setString(1, vehicle.getVehicle_reg());
+                    p2.setString(2, vehicle.getCustomer_id());
                     System.out.println(cbMechAssigned.getValue());
                     p2.setString(3,getMechanicID(cbMechAssigned.getValue()));
                     p2.setString(4, "PENDING");
                     p2.executeUpdate();
                 }
 
-                String jobSheetID = getJobSheetId(vehicle_reg, customer_id);
+                String jobSheetID = getJobSheetId(vehicle);
 
 
                 String current_time_str = Helpers.getTime();
                 for (int i = 0; i < Jobsheet.jobsheet.size(); i++) {
-                    String desc = Jobsheet.jobsheet.get(i).getJob_desc();
-                    String summery = Jobsheet.jobsheet.get(i).getJob_summmery();
-                    String mech_id = Jobsheet.jobsheet.get(i).getMechanic_id();
+
+                    Jobsheet.Job job = new Jobsheet.Job();
+
+                    job.setJobDesc(Jobsheet.jobsheet.get(i).getJobDesc());
+                    job.setJobSummmery(Jobsheet.jobsheet.get(i).getJobSummmery());
+                    job.setJobStatus(Jobsheet.jobsheet.get(i).getJobStatus());
 
                     String sql = "INSERT INTO VMS.JOBS (jobsheetid, job_summery, job_comments, job_status,date_entered, entered_by) VALUES (?,?,?,?,?,?)";
                     PreparedStatement p1 = con.prepareStatement(sql);
                     p1.setString(1, jobSheetID);
-                    p1.setString(2, summery);
-                    p1.setString(3, desc);
+                    p1.setString(2, job.getJobSummmery());
+                    p1.setString(3, job.getJobSummmery());
                     p1.setString(4, "PENDING");
                     p1.setString(5, current_time_str);
                     p1.setString(6, Auth.getUser());
@@ -225,13 +221,13 @@ public class JobsheetController {
     }
 
 
-    public static String getJobSheetId(String vehicle_reg, String customer_id) throws SQLException {
+    public static String getJobSheetId(Vehicle vehicle) throws SQLException {
         String id = null;
         Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/VMS?autoReconnect=true&useSSL=false", "root", "1234");
         String sql = "SELECT id FROM VMS.JOBSHEET where vehicle_reg = ? and customer_id = ? and status = 'PENDING'";
         PreparedStatement p = con.prepareStatement(sql);
-        p.setString(1, vehicle_reg);
-        p.setString(2, customer_id);
+        p.setString(1, vehicle.getVehicle_reg());
+        p.setString(2, vehicle.getCustomer_id());
         ResultSet resultSet = p.executeQuery();
 
         while (resultSet.next()) {
@@ -242,13 +238,13 @@ public class JobsheetController {
 
     }
 
-    public static boolean checkJsPending(String vehicle_reg, String customer_id) throws SQLException {
+    public static boolean checkJsPending(Vehicle vehicle) throws SQLException {
         boolean found = false;
         Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/VMS?autoReconnect=true&useSSL=false", "root", "1234");
         String sql = "SELECT id FROM VMS.JOBSHEET where vehicle_reg = ? and customer_id = ? and status = 'PENDING'";
         PreparedStatement p = con.prepareStatement(sql);
-        p.setString(1, vehicle_reg);
-        p.setString(2, customer_id);
+        p.setString(1, vehicle.getVehicle_reg());
+        p.setString(2, vehicle.getCustomer_id());
         ResultSet resultSet = p.executeQuery();
 
         while (resultSet.next()) {

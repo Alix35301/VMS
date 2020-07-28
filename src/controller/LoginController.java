@@ -82,6 +82,10 @@ public class LoginController extends Auth {
                         FXMLLoader loader = new FXMLLoader(new File("src/resources/service.fxml").toURI().toURL());
                         AnchorPane pane = loader.load();
                         rootPane.getChildren().setAll(pane);
+                    } else if (Integer.parseInt(role) == 300){
+                        FXMLLoader loader = new FXMLLoader(new File("src/resources/searchTwitter.fxml").toURI().toURL());
+                        AnchorPane pane = loader.load();
+                        rootPane.getChildren().setAll(pane);
                     }
                 }
             } else {
