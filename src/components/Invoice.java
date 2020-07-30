@@ -5,7 +5,15 @@ package components;
  * @created_on 7/21/20
  */
 public class Invoice {
-    String id, vehicleReg, customerId,createdUser,createdDate,status, paymentMethod, amountGiven;
+    String id, vehicleReg, customerId,createdUser,createdDate,status, paymentMethod, amountGiven, discount;
+
+    public String getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(String discount) {
+        this.discount = discount;
+    }
 
     public String getAmountGiven() {
         return amountGiven;

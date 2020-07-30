@@ -13,120 +13,159 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="800.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.UpdateJobsheetController">
+<AnchorPane fx:id="rootPane" prefHeight="800.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.UpdateJobsheetController">
    <children>
-      <Label fx:id="lblcustomer" contentDisplay="CENTER" layoutX="14.0" layoutY="40.0" prefHeight="16.0" prefWidth="400.0" text="Update Service Details (Job Sheet)" textAlignment="CENTER">
+      <Label fx:id="lblcustomer" contentDisplay="CENTER" layoutX="193.0" layoutY="28.0" prefHeight="25.0" prefWidth="535.0" text="Update Service Details (Job Sheet)" textAlignment="CENTER" textFill="WHITE">
          <font>
-            <Font name="System Bold" size="16.0" />
+            <Font name="System Bold" size="20.0" />
          </font>
          <padding>
             <Insets left="40.0" />
          </padding></Label>
-      <HBox layoutX="48.0" layoutY="104.0" prefHeight="186.0" prefWidth="315.0">
+      <HBox layoutX="48.0" layoutY="104.0" prefHeight="270.0" prefWidth="366.0">
          <children>
-            <VBox prefHeight="170.0" prefWidth="315.0">
+            <VBox prefHeight="292.0" prefWidth="366.0">
                <children>
-                  <Label text="Selecting Vehicle">
+                  <Label text="Selecting Vehicle" textFill="WHITE">
                      <VBox.margin>
                         <Insets bottom="20.0" />
                      </VBox.margin>
                      <font>
-                        <Font name="System Bold Italic" size="13.0" />
+                        <Font name="System Bold Italic" size="18.0" />
                      </font>
                   </Label>
-                  <HBox prefHeight="29.0" prefWidth="315.0">
+                  <HBox prefHeight="42.0" prefWidth="366.0">
                      <children>
-                        <TextField fx:id="searchTF" prefHeight="26.0" prefWidth="236.0" promptText="Vehicle Registration Number" text="123" />
-                        <Button mnemonicParsing="false" onAction="#searchVehicle" text="Search">
+                        <TextField fx:id="searchTF" prefHeight="40.0" prefWidth="300.0" promptText="Vehicle Registration Number" text="123">
+                           <font>
+                              <Font size="18.0" />
+                           </font></TextField>
+                        <Button mnemonicParsing="false" onAction="#searchVehicle" prefHeight="41.0" prefWidth="142.0" text="Search">
                            <HBox.margin>
                               <Insets left="10.0" />
                            </HBox.margin>
                         </Button>
                      </children>
                   </HBox>
-                  <HBox prefHeight="100.0" prefWidth="200.0">
+                  <HBox prefHeight="0.0" prefWidth="366.0">
                      <children>
-                        <Label text="Customer Name:">
+                        <Label text="Customer Name:" textFill="WHITE">
                            <padding>
                               <Insets bottom="10.0" />
                            </padding>
+                           <font>
+                              <Font size="18.0" />
+                           </font>
                         </Label>
-                        <Text fx:id="cust_nameTxt" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" visible="false">
+                        <Text fx:id="cust_nameTxt" fill="#79e2fc" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" visible="false">
                            <HBox.margin>
                               <Insets left="5.0" top="1.0" />
                            </HBox.margin>
+                           <font>
+                              <Font size="18.0" />
+                           </font>
                         </Text>
                      </children>
                      <VBox.margin>
                         <Insets top="10.0" />
                      </VBox.margin>
                   </HBox>
-                  <HBox prefHeight="100.0" prefWidth="200.0">
+                  <HBox prefHeight="31.0" prefWidth="366.0">
                      <children>
-                        <Label text="Email Address:" />
-                        <Text fx:id="emailTxt" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" visible="false">
+                        <Label text="Email Address:" textFill="WHITE">
+                           <font>
+                              <Font size="18.0" />
+                           </font></Label>
+                        <Text fx:id="emailTxt" fill="#79e2fc" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" visible="false">
                            <HBox.margin>
                               <Insets left="5.0" />
                            </HBox.margin>
+                           <font>
+                              <Font size="18.0" />
+                           </font>
                         </Text>
                      </children>
                   </HBox>
-                  <HBox prefHeight="100.0" prefWidth="200.0">
+                  <HBox prefHeight="0.0" prefWidth="366.0">
                      <children>
-                        <Label text="Model: ">
-                           <padding>
-                              <Insets bottom="10.0" />
-                           </padding>
+                        <Label text="Model: " textFill="WHITE">
                            <HBox.margin>
                               <Insets top="10.0" />
                            </HBox.margin>
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                           <padding>
+                              <Insets bottom="10.0" />
+                           </padding>
                         </Label>
-                        <Text fx:id="modelTxt" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" visible="false">
+                        <Text fx:id="modelTxt" fill="#79e2fc" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" visible="false">
                            <HBox.margin>
                               <Insets left="5.0" top="10.0" />
                            </HBox.margin>
+                           <font>
+                              <Font size="18.0" />
+                           </font>
                         </Text>
                      </children>
                   </HBox>
-                  <HBox prefHeight="100.0" prefWidth="200.0">
+                  <HBox prefHeight="18.0" prefWidth="366.0">
                      <children>
-                        <Label text="Contact Number:">
+                        <Label text="Contact Number:" textFill="WHITE">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
                            <padding>
                               <Insets bottom="10.0" />
                            </padding>
                         </Label>
-                        <Text fx:id="contactTxt" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" visible="false">
+                        <Text fx:id="contactTxt" fill="#79e2fc" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" visible="false">
                            <HBox.margin>
                               <Insets left="5.0" />
                            </HBox.margin>
+                           <font>
+                              <Font size="18.0" />
+                           </font>
                         </Text>
                      </children>
                   </HBox>
-                  <HBox prefHeight="100.0" prefWidth="200.0">
+                  <HBox prefHeight="2.0" prefWidth="366.0">
                      <children>
-                        <Label text="Chassis : ">
+                        <Label text="Chassis : " textFill="WHITE">
                            <padding>
                               <Insets bottom="10.0" />
                            </padding>
+                           <font>
+                              <Font size="18.0" />
+                           </font>
                         </Label>
-                        <Text fx:id="chassisTxt" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" visible="false">
+                        <Text fx:id="chassisTxt" fill="#79e2fc" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" visible="false">
                            <HBox.margin>
                               <Insets left="5.0" />
                            </HBox.margin>
+                           <font>
+                              <Font size="18.0" />
+                           </font>
                         </Text>
                      </children>
                   </HBox>
                   <HBox prefHeight="100.0" prefWidth="200.0">
                      <children>
-                        <Label text="Registration Date: ">
+                        <Label text="Registration Date: " textFill="WHITE">
                            <padding>
                               <Insets bottom="10.0" />
                            </padding>
+                           <font>
+                              <Font size="18.0" />
+                           </font>
                         </Label>
-                        <Text fx:id="reg_dateTxt" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" visible="false">
+                        <Text fx:id="reg_dateTxt" fill="#79e2fc" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" visible="false">
                            <HBox.margin>
                               <Insets left="5.0" top="1.0" />
                            </HBox.margin>
+                           <font>
+                              <Font size="18.0" />
+                           </font>
                         </Text>
                      </children>
                   </HBox>
@@ -134,27 +173,30 @@
             </VBox>
          </children>
       </HBox>
-      <VBox layoutX="414.0" layoutY="67.0" prefHeight="321.0" prefWidth="567.0">
+      <VBox layoutX="443.0" layoutY="110.0" prefHeight="384.0" prefWidth="543.0">
          <children>
-            <Label text="Jobs">
+            <Label text="Jobs" textFill="WHITE">
                <VBox.margin>
                   <Insets bottom="20.0" />
                </VBox.margin>
                <font>
-                  <Font name="System Bold Italic" size="13.0" />
+                  <Font name="System Bold Italic" size="18.0" />
                </font>
             </Label>
-            <TableView fx:id="jobstatus" prefHeight="200.0" prefWidth="200.0" />
+            <TableView fx:id="jobstatus" prefHeight="286.0" prefWidth="543.0" />
          </children>
       </VBox>
-      <ChoiceBox fx:id="selectJob" layoutX="48.0" layoutY="382.0" prefWidth="150.0" />
-      <Text layoutX="48.0" layoutY="370.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Select Job">
+      <ChoiceBox fx:id="selectJob" layoutX="48.0" layoutY="400.0" prefHeight="40.0" prefWidth="240.0" />
+      <Text layoutX="48.0" layoutY="391.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Select Job">
          <font>
-            <Font name="System Bold" size="13.0" />
+            <Font name="System Bold" size="18.0" />
          </font>
       </Text>
-      <TextArea fx:id="remarks" layoutX="48.0" layoutY="417.0" prefHeight="150.0" prefWidth="366.0" />
-      <Button layoutX="51.0" layoutY="580.0" mnemonicParsing="false" onAction="#update" text="Update" />
-      <Button layoutX="132.0" layoutY="580.0" mnemonicParsing="false" text="Save PDF" />
+      <TextArea fx:id="remarks" layoutX="48.0" layoutY="460.0" prefHeight="150.0" prefWidth="366.0" promptText="Enter details">
+         <font>
+            <Font size="15.0" />
+         </font></TextArea>
+      <Button layoutX="48.0" layoutY="628.0" mnemonicParsing="false" onAction="#update" prefHeight="33.0" prefWidth="86.0" text="Update" />
+      <Button layoutX="892.0" layoutY="27.0" mnemonicParsing="false" onAction="#logout" text="Logout" />
    </children>
 </AnchorPane>

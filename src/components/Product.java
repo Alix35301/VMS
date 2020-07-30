@@ -16,7 +16,7 @@ public class Product {
     }
 
     public String getId() {
-        return "PR"+id;
+        return id;
     }
 
     public void setId(String id) {

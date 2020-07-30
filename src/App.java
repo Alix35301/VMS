@@ -14,22 +14,14 @@ public class App extends Application {
         try {
 
             FXMLLoader loader =new FXMLLoader(new File("src/resources/Login.fxml").toURI().toURL());
-
             Parent root =loader.load();
-            root.setStyle("-fx-background-color: linear-gradient(#4848ff,rgba(58,139,121,0.04))");
             primaryStage.setResizable(false);
             primaryStage.setScene(new Scene(root, 1000, 800));
-
             primaryStage.show();
 
         }catch (Exception e){
             e.printStackTrace();
         }
 
-    }
-
-
-    public static void main(String[] args) {
-        launch(args);
     }
 }

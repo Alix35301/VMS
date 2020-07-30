@@ -5,9 +5,18 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.io.IOException;
 import java.sql.*;
@@ -32,6 +41,10 @@ public class PaymentsController {
     private TextField amountGiven;
     @FXML
     private Text totalTxt;
+    @FXML
+    private TextField discountTF;
+    @FXML
+    private AnchorPane rootPane;
 
     @FXML
     private CheckBox labourCheckBox;
@@ -46,7 +59,7 @@ public class PaymentsController {
 
     ObservableList<String> paymentOption = FXCollections.observableArrayList("Cash", "Card");
 
-    enum InvoiceStatus{
+    enum InvoiceStatus {
         PENDING,
         PAID
     }
@@ -73,8 +86,12 @@ public class PaymentsController {
         paymentOptionCb.setItems(paymentOption);
 
         paymentsTable.getColumns().addAll(column1, column2, column3);
-        paymentsTable.setPlaceholder(new Label("You have not added any products yet.."));
-        jobsheetTable.setPlaceholder(new Label("No jobs found for this vehicle"));
+        Label label = new Label("You have not added any products yet..");
+        label.setTextFill(Color.WHITE);
+        Label label2 = new Label("No jobs found for this vehicle");
+        label2.setTextFill(Color.WHITE);
+        paymentsTable.setPlaceholder(label2);
+        jobsheetTable.setPlaceholder(label);
 
 
     }
@@ -139,6 +156,8 @@ public class PaymentsController {
             contactTxt.setText(customer.getPhone());
             jobsheetTable.getItems().clear();
             buildData();
+            // creqting invoice
+
 
 
         } else if (searchTF.getText().trim().isEmpty()) {
@@ -156,7 +175,7 @@ public class PaymentsController {
 
 
     public Jobsheet getJobsheet(Vehicle vehicle) throws SQLException {
-        Connection conn =Helpers.getConnection();
+        Connection conn = Helpers.getConnection();
         String sql1 = "SELECT * from VMS.JOBSHEET where vehicle_reg=? and status = 'PENDING'";
         PreparedStatement preparedStatement = conn.prepareStatement(sql1);
         preparedStatement.setString(1, vehicle.getVehicle_reg());
@@ -188,12 +207,17 @@ public class PaymentsController {
     public void buildData() throws SQLException {
         Jobsheet jobsheet = getJobsheet(vehicle);
         // checks if there is acitve jobsheet to populate table
-        if (jobsheet.getId()==null){
+        if (jobsheet.getId() == null) {
             AlertDiaglog.infoBox("There is no active Jobsheet for this" +
-                "vehicle, please create a new jobsheet to coninue","No active Jobsheet",
+                    "vehicle, please create a new jobsheet to coninue", "No active Jobsheet",
                 Alert.AlertType.WARNING);
-        }else {
-            ResultSet resultSet =getJobs();
+        } else {
+
+            invoice.setCustomerId(customer.getId());
+            invoice.setVehicleReg(vehicle.getVehicle_reg());
+            invoice.setId(createInvoice(invoice));
+
+            ResultSet resultSet = getJobs();
             Jobsheet.Job job = new Jobsheet.Job();
             while (resultSet.next()) {
 
@@ -209,18 +233,15 @@ public class PaymentsController {
 
     public void addService(ActionEvent event) throws SQLException {
         ObservableList<ObservableList> data = FXCollections.observableArrayList();
-        if(jobsheet.getId()==null){
+        if (jobsheet.getId() == null) {
             AlertDiaglog.infoBox("There is no active Jobsheet for this" +
-                    "vehicle, please create a new jobsheet to coninue","No active Jobsheet",
+                    "vehicle, please create a new jobsheet to coninue", "No active Jobsheet",
                 Alert.AlertType.WARNING);
 
-        }else{
-            Connection con =Helpers.getConnection();
+        } else {
+            Connection con = Helpers.getConnection();
             // creating invoice if not already created
 
-            invoice.setCustomerId(customer.getId());
-            invoice.setVehicleReg(vehicle.getVehicle_reg());
-            invoice.setId(createInvoice(invoice));
             // creating order under the new / old invoice id
             Product product = getProduct(productName.getText());
             if (product.getPrice() != null) {
@@ -230,8 +251,8 @@ public class PaymentsController {
 
                 ArrayList<Product> products = getAllProducts();
                 float total = InvoiceGenerator.calculateTotal(products);
-                float tax = InvoiceGenerator.calTax(total,6);
-                totalTxt.setText("MVR "+String.valueOf(total+tax));
+                float tax = InvoiceGenerator.calTax(total, 6);
+                totalTxt.setText("MVR " + String.valueOf(total + tax));
 
             } else {
                 AlertDiaglog.infoBox("Item not found", ".", Alert.AlertType.INFORMATION);
@@ -359,9 +380,16 @@ public class PaymentsController {
 
 
             }
+
             products.add(product);
 
 
+        }
+        if (labourCheckBox.isSelected()) {
+            MechRate mechRate = getMechRate();
+            products.add(new Product(mechRate.getId(), mechRate.getMech_id(), mechRate.getRate()));
+        } else {
+            removeMechRate(products);
         }
 
 
@@ -382,44 +410,47 @@ public class PaymentsController {
     }
 
     public void updateInvoice(ActionEvent event) throws SQLException {
-        if(jobsheet.getId()==null){
+        invoice.setDiscount(discountTF.getText());
+        if (jobsheet.getId() == null) {
             AlertDiaglog.infoBox("There is no active Jobsheet for this" +
-                    "vehicle, please create a new jobsheet to coninue","No active Jobsheet",
+                    "vehicle, please create a new jobsheet to coninue", "No active Jobsheet",
                 Alert.AlertType.WARNING);
 
-        }else{
-
-            float total = InvoiceGenerator.calculateTotal(getAllProducts());
-            float tax = InvoiceGenerator.calTax(total, 6);
-            float net = total + tax;
-            invoice.setAmountGiven(amountGiven.getText());
-            invoice.setPaymentMethod(paymentOptionCb.getValue());
-            invoice.setCreatedUser(Auth.getUser());
+        } else {
+            if(invoice.getId()!=null) {
+                float total = InvoiceGenerator.calculateTotal(getAllProducts());
+                float tax = InvoiceGenerator.calTax(total, 6);
+                float net = total + tax;
+                invoice.setAmountGiven(amountGiven.getText());
+                invoice.setPaymentMethod(paymentOptionCb.getValue());
+                invoice.setCreatedUser(Auth.getUser());
 
 //
-            if (isValid(amountGiven.getText(),net)) {
-                Connection conn = Helpers.getConnection();
-                String sql = "UPDATE VMS.INVOICE SET status =?, total =?, amount_given =?, payment_type=? where id=?";
-                try {
-                    PreparedStatement p = conn.prepareStatement(sql);
+                if (isValid(amountGiven.getText(), net)) {
+                    Connection conn = Helpers.getConnection();
+                    String sql = "UPDATE VMS.INVOICE SET status =?, total =?, amount_given =?, payment_type=? where id=?";
+                    try {
+                        PreparedStatement p = conn.prepareStatement(sql);
 
-                    p.setString(1, String.valueOf(InvoiceStatus.PAID));
-                    p.setString(2, String.valueOf(net));
-                    p.setString(3, invoice.getAmountGiven());
-                    p.setString(4, invoice.getPaymentMethod());
-                    p.setString(5, invoice.getId());
-                    System.out.println(p.toString());
-                    p.executeUpdate();
-                } catch (SQLException throwables) {
-                    throwables.printStackTrace();
+                        p.setString(1, String.valueOf(InvoiceStatus.PAID));
+                        p.setString(2, String.valueOf(net));
+                        p.setString(3, invoice.getAmountGiven());
+                        p.setString(4, invoice.getPaymentMethod());
+                        p.setString(5, invoice.getId());
+                        System.out.println(p.toString());
+                        p.executeUpdate();
+                    } catch (SQLException throwables) {
+                        throwables.printStackTrace();
+                    }
+                    generateInvoice();
+                    updateJobsheetStatus();
+                    AlertDiaglog.infoBox("Successfully added the payment.", "Payment Success", Alert.AlertType.INFORMATION);
+                } else {
+                    AlertDiaglog.infoBox("Please make sure the value is numeric and is greater than the total", "Invalid Input", Alert.AlertType.WARNING);
                 }
-                generateInvoice();
-                updateJobsheetStatus();
-                AlertDiaglog.infoBox("Successfully added the payment.","Payment Success", Alert.AlertType.INFORMATION);
             }else {
-                AlertDiaglog.infoBox("Please make sure the value is numeric and is greater than the total","Invalid Input", Alert.AlertType.WARNING);
+                AlertDiaglog.infoBox("Please add some product to proceed","Empty invoice", Alert.AlertType.ERROR);
             }
-
         }
 
     }
@@ -429,11 +460,11 @@ public class PaymentsController {
         float amount = 0;
         try {
             amount = Float.parseFloat(input);
-            System.out.println(amount+" "+total);
-            if (amount < total){
+            System.out.println(amount + " " + total);
+            if (amount < total) {
                 valid = false;
-            }else if (amount == total){
-                valid=true;
+            } else if (amount == total) {
+                valid = true;
             }
 
         } catch (Exception e) {
@@ -448,7 +479,7 @@ public class PaymentsController {
         String sql = "UPDATE VMS.JOBSHEET SET status=? where id = ?";
         PreparedStatement p = conn.prepareStatement(sql);
         p.setString(1, Jobsheet.JobSheetStatsus.UPDATED.toString());
-        p.setString(2, jobsheetid);
+        p.setString(2, jobsheet.getId());
         p.executeUpdate();
     }
 
@@ -459,26 +490,81 @@ public class PaymentsController {
         p.setString(1, jobsheet.getMech_assigned());
         ResultSet resultSet = p.executeQuery();
         MechRate mechRate = new MechRate();
-        while(resultSet.next()){
+        while (resultSet.next()) {
             mechRate.setId(resultSet.getString(1));
-            mechRate.setMech_id(resultSet.getString(2));
+            mechRate.setMech_id("labour cost");
             mechRate.setRate(resultSet.getString(3));
         }
         return mechRate;
     }
 
-    public void checkbox(ActionEvent event){
-        if(labourCheckBox.isSelected()){
-            System.out.println(paymentsTable.);
-            // add cost to table
-            // add that order table sql
 
-        }else{
-            System.out.println();
-            // delete if exists in the table
-            // delete if exisit in the table sql
+    public void removeMechRate(ArrayList<Product> products) {
+        for (Product product : products) {
+            if (product.getId().contains("MR")) {
+                System.out.println("removed");
+            }
         }
+
     }
 
+    public void listenerLabour(ActionEvent event) throws SQLException {
+        try {
+            if(jobsheet.getId()!=null) {
+                MechRate mechRate = getMechRate();
+                float value = Float.parseFloat(totalTxt.getText().split(" ")[1]);
+//        float tax = InvoiceGenerator.calTax(value + Float.parseFloat(mechRate.getRate()),6);
+                float val = InvoiceGenerator.calTax(Float.parseFloat(mechRate.getRate()), 6) + Float.parseFloat(mechRate.getRate());
+                if (labourCheckBox.isSelected()) {
+
+                    totalTxt.setText("MVR " + (value + val));
+                } else {
+                    totalTxt.setText("MVR " + (value - val));
+
+                }
+            }
+        }catch (Exception e){
+            AlertDiaglog.infoBox(e.getMessage(),"Error Happened", Alert.AlertType.ERROR);
+        }
+
+    }
+
+
+
+    public void resetInvoice(ActionEvent event) {
+        Connection conn = Helpers.getConnection();
+        String sql = "DELETE  FROM VMS.ORDER WHERE invoice_id = ?";
+        PreparedStatement p = null;
+        try {
+            p = conn.prepareStatement(sql);
+            p.setString(1, invoice.getId());
+            p.executeUpdate();
+            paymentsTable.getItems().clear();
+            totalTxt.setText("MVR 0");
+            AlertDiaglog.infoBox("Orders has been cleared", "Success", Alert.AlertType.INFORMATION);
+
+        } catch (SQLException throwables) {
+            AlertDiaglog.infoBox(throwables.getMessage(), "Something happened", Alert.AlertType.ERROR);
+
+        }
+
+    }
+
+    public void logout(ActionEvent event) throws IOException {
+
+        AlertDiaglog.infoBox("You have successfully logged out.","Loggout", Alert.AlertType.INFORMATION);
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/resources/Login.fxml"));
+        AnchorPane pane = fxmlLoader.load();
+        rootPane.getChildren().setAll(pane);
+
+    }
+
+    public void back(ActionEvent event) throws IOException {
+
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/resources/service.fxml"));
+        AnchorPane pane = fxmlLoader.load();
+        rootPane.getChildren().setAll(pane);
+
+    }
 
 }

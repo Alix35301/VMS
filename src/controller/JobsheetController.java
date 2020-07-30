@@ -5,10 +5,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 
 import java.io.IOException;
@@ -21,6 +23,8 @@ import java.util.List;
  * @created_on 7/16/20
  */
 public class JobsheetController {
+    @FXML
+    private AnchorPane rootPane;
     @FXML
     private ChoiceBox<String> cbMechAssigned;
     @FXML
@@ -73,7 +77,7 @@ public class JobsheetController {
 
         }
         if (registered) {
-            String sql2 = "SELECT cust_name, email, phone, address, customer_type FROM VMS.CUSTOMERS WHERE customer_id=?";
+            String sql2 = "SELECT cust_name, email, phone, address, customer_type, customer_id FROM VMS.CUSTOMERS WHERE customer_id=?";
             PreparedStatement statement = con.prepareStatement(sql2);
             statement.setString(1, vehicle.getCustomer_id());
             ResultSet resultSet1 = statement.executeQuery();
@@ -83,6 +87,7 @@ public class JobsheetController {
                 customer.setPhone(resultSet1.getString(3));
                 customer.setAddress(resultSet1.getString(4));
                 customer.setType(customer.getType(Integer.parseInt(resultSet1.getString(5))));
+                customer.setId(resultSet1.getString(6));
             }
             cust_type_txt.setVisible(true);
             contactTxt.setVisible(true);
@@ -131,7 +136,7 @@ public class JobsheetController {
         }
     }
 
-    public void saveJobsheet(ActionEvent event) throws SQLException {
+    public void saveJobsheet(ActionEvent event) throws SQLException, IOException {
         if (!searchTF.getText().trim().isEmpty()) {
             if (Jobsheet.jobsheet.size() > 0) {
                 Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/VMS?autoReconnect=true&useSSL=false", "root", "1234");
@@ -167,6 +172,8 @@ public class JobsheetController {
                     p1.setString(5, current_time_str);
                     p1.setString(6, Auth.getUser());
                     p1.executeUpdate();
+
+                    JobSheetGenerator.creatJobSheet(jobSheetID,customer,vehicle);
                 }
                 AlertDiaglog.infoBox("Jobs has been successfully saved in the system", "Job Saved", Alert.AlertType.INFORMATION);
                 //        Jobsheet.toPDF(Jobsheet.jobsheet);
@@ -255,6 +262,14 @@ public class JobsheetController {
 
     }
 
+
+    public void back(ActionEvent event) throws IOException {
+
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/resources/service.fxml"));
+        AnchorPane pane = fxmlLoader.load();
+        rootPane.getChildren().setAll(pane);
+
+    }
 
 
 }

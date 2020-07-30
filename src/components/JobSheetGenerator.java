@@ -1,44 +1,36 @@
 package components;
+
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.colors.ColorConstants;
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.borders.Border;
-import com.itextpdf.layout.borders.DashedBorder;
-import com.itextpdf.layout.borders.DottedBorder;
-import com.itextpdf.layout.element.*;
-import com.itextpdf.kernel.font.PdfFontFactory;
-import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Image;
-import com.itextpdf.layout.property.FontKerning;
-import com.itextpdf.layout.property.HorizontalAlignment;
-import com.itextpdf.layout.property.TextAlignment;
-import com.itextpdf.layout.property.VerticalAlignment;
-import javafx.application.Application;
-import javafx.application.HostServices;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
 
-import java.awt.*;
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 
 /**
  * @author ali
  * @created_on 7/24/20
  */
-public class InvoiceGenerator  {
+public class JobSheetGenerator {
     public static class Row{
         Cell cell1;
         Cell cell2;
         Cell cell3;
-        public Row(Product product){
-            cell1= new Cell().add(new Paragraph(product.getId()));
-            cell2= new Cell().add(new Paragraph(product.getProductCode()));
-            cell3= new Cell().add(new Paragraph(product.getPrice()));
+        public Row(Jobsheet.Job job){
+            cell1= new Cell().add(new Paragraph(job.getJobSummmery()));
+            cell2= new Cell().add(new Paragraph(job.getJobDesc()));
+            cell3= new Cell().add(new Paragraph(job.getJobStatus()));
         }
         public Row(){
             cell1= new Cell();
@@ -85,11 +77,11 @@ public class InvoiceGenerator  {
 
     }
 
-    public static void createInvoice(ArrayList<Product> products, Customer customer, Vehicle vehicle, Invoice invoice) throws IOException {
+    public static void creatJobSheet(String jobSheetId, Customer customer, Vehicle vehicle) throws IOException {
         Document doc=null;
         Table table = new Table(3);
         PageSize pageSize = null;
-        String invoiceName = null;
+        String jobsheetName = null;
 //        table.setHorizontalAlignment(HorizontalAlignment.CENTER);
 
 //        table.setFixedLayout();
@@ -97,8 +89,8 @@ public class InvoiceGenerator  {
 
 
         try {
-             invoiceName= String.format("src/doc/invoice-%s-%s.pdf", invoice.getId(),invoice.customerId);
-            PdfDocument pdfDoc = new PdfDocument(new PdfWriter(invoiceName));
+            jobsheetName= String.format("src/doc/jobsheet-%s-%s.pdf", jobSheetId,customer.getId());
+            PdfDocument pdfDoc = new PdfDocument(new PdfWriter(jobsheetName));
             doc = new Document(pdfDoc,PageSize.A5);
             pageSize = doc.getPdfDocument().getDefaultPageSize();
 
@@ -115,12 +107,12 @@ public class InvoiceGenerator  {
 
 
 
-            Paragraph heading = new Paragraph("INVOICE").setUnderline();
+            Paragraph heading = new Paragraph("Jobsheet").setUnderline();
             heading.setFontSize(12).setFixedPosition(180,550,200);
-            String var = String.format("Invoice #: %s\n Customer ID: %s\nDate: %s",invoice.getId(),customer.getId(),invoice.getCreatedDate() );
-            Paragraph invoiceDetails = new Paragraph(var).setFontSize(8).setFixedPosition(200,505,200);
+            String var = String.format("Jobsheet #: %s\n Customer ID: %s\n",jobSheetId,customer.getId() );
+            Paragraph jobSheetDetails = new Paragraph(var).setFontSize(8).setFixedPosition(200,505,200);
 
-            Paragraph info = new Paragraph("Bill To: ").setItalic().setFontSize(8)
+            Paragraph info = new Paragraph("Customer Info: ").setItalic().setFontSize(8)
                 .setMarginLeft(20);
             String var2 = String.format("Name: %s\n Email: %s\nAddress: %s\nContact: %s\n", customer.getName(),
                 customer.getEmail(),customer.getAddress(),customer.getPhone());
@@ -138,7 +130,7 @@ public class InvoiceGenerator  {
             doc.add(details);
 
 
-            doc.add(invoiceDetails);
+            doc.add(jobSheetDetails);
             doc.add(heading);
 //            doc.add(image1);
             PdfFont font = PdfFontFactory.createFont();
@@ -146,9 +138,9 @@ public class InvoiceGenerator  {
 
 
              // 3 columns.
-            Cell cell1 = new Cell().add(new Paragraph("Product Id").setFontColor(ColorConstants.WHITE).setFontSize(8));
-            Cell cell2 = new Cell().add(new Paragraph("Product Name").setFontColor(ColorConstants.WHITE).setFontSize(8));
-            Cell cell3 = new Cell().add(new Paragraph("Price").setFontColor(ColorConstants.WHITE).setFontSize(8));
+            Cell cell1 = new Cell().add(new Paragraph("Job Summery").setFontColor(ColorConstants.WHITE).setFontSize(8));
+            Cell cell2 = new Cell().add(new Paragraph("Job Description").setFontColor(ColorConstants.WHITE).setFontSize(8));
+            Cell cell3 = new Cell().add(new Paragraph("Status").setFontColor(ColorConstants.WHITE).setFontSize(8));
 
 
             cell1.setBackgroundColor(ColorConstants.BLACK);
@@ -164,43 +156,12 @@ public class InvoiceGenerator  {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        for(Product product:products){
-            Row row = new Row(product);
+        ArrayList<Jobsheet.Job>jobs = Jobsheet.getJobs(jobSheetId);
+        for(Jobsheet.Job job: jobs){
+            Row row = new Row(job);
             Row.addRow(table,row);
         }
-        Row footer = new Row();
-        float total = calculateTotal(products);
-        float dtotal = calDiscount(total,invoice);
-        System.out.println("D TOTAL"+dtotal);
-        float tax = calTax(dtotal,6);
-        float netTotal = dtotal+tax;
-        System.out.println("NET TOTAL"+netTotal);
-        System.out.println("DISCOUNT "+invoice.getDiscount());
-        footer.getCell3().add(new Paragraph(String.format(
-            "Total:  MVR %.2f\n" +
-            "Discount: %s (Percent) \n"+
-            "Tax:  MVR %.2f\n" +
-            "Total Due:  MVR %.2f\n\n" +
-            "Payment Method: %s\n" +
-            "Amount given: MVR %.2f\n" +
-            "Balance: MVR %.2f\n" +
-            "Cashier: %s",
-            total,
-            invoice.getDiscount(),
-            tax,
-            netTotal,
-            invoice.getPaymentMethod(),
-            Float.parseFloat(invoice.getAmountGiven()),
-            Float.parseFloat(invoice.getAmountGiven())-netTotal,
-            invoice.createdUser
-        )));
-        table.addCell(footer.getCell1());
-        table.addCell(footer.getCell2());
-        table.addCell(footer.getCell3());
-        System.out.println("Total "+total);
-        System.out.println("Tax "+tax);
-        System.out.println("Net Due "+netTotal);
+
 
 //        paragraph.add(table);
 
@@ -211,37 +172,17 @@ public class InvoiceGenerator  {
         table.setMarginLeft(20);
 
         table.setWidth(288);
+
+        Paragraph paragraph = new Paragraph("Note: Price of products/services will be informed once service is done").setItalic().setFontSize(10);
         doc.add(table);
+        doc.add(paragraph);
         doc.close();
 
         //TODO open the generated pdf file
 
     }
 
-    public static float calDiscount(float total, Invoice invoice){
-        float amount = 0;
-        if (Integer.parseInt(invoice.getDiscount())==0){
-            amount=total;
-        }else{
-            amount =((100-Float.parseFloat(invoice.getDiscount()))/100)*(total);
 
-        }
-        return amount;
-    }
-
-    public static float calculateTotal(ArrayList<Product> products){
-        int total = 0;
-        for(Product product: products){
-            total+=Integer.parseInt(product.getPrice());
-        }
-        return total;
-    }
-
-    public static float calTax(float total, float tax){
-
-        return (tax/100)*total;
-
-    }
 
 
 }

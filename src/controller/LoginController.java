@@ -58,6 +58,7 @@ public class LoginController extends Auth {
         User user = new User(txtUsername.getText(), txtPassword.getText(), choiceBoxLogin.getValue());
         if (!user.getEmail().equals("") || !user.getPassword().equals("")) {
             if (Auth.Authenticate(user)) {
+                AlertDiaglog.infoBox("You have successfully logged in","Success", Alert.AlertType.INFORMATION);
                 if (choiceBoxLogin.getValue() == "Customer") {
                     FXMLLoader loader = new FXMLLoader(new File("src/resources/customer.fxml").toURI().toURL());
                     //            lblcustomer.setText(lblcustomer.getText()+" "+customer.getEmail());
@@ -83,7 +84,7 @@ public class LoginController extends Auth {
                         AnchorPane pane = loader.load();
                         rootPane.getChildren().setAll(pane);
                     } else if (Integer.parseInt(role) == 300){
-                        FXMLLoader loader = new FXMLLoader(new File("src/resources/searchTwitter.fxml").toURI().toURL());
+                        FXMLLoader loader = new FXMLLoader(new File("src/resources/analyst.fxml").toURI().toURL());
                         AnchorPane pane = loader.load();
                         rootPane.getChildren().setAll(pane);
                     }

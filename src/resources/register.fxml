@@ -10,101 +10,132 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="800.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.RegisterController">
+<AnchorPane fx:id="rootPane" prefHeight="800.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.RegisterController">
    <children>
-      <Label fx:id="lblcustomer" contentDisplay="CENTER" layoutX="100.0" layoutY="45.0" prefHeight="16.0" prefWidth="400.0" text="Register New Vehicle" textAlignment="CENTER">
+      <Label fx:id="lblcustomer" contentDisplay="CENTER" layoutX="300.0" layoutY="42.0" prefHeight="16.0" prefWidth="400.0" text="Register New Vehicle" textAlignment="CENTER" textFill="WHITE">
          <font>
-            <Font name="System Bold" size="16.0" />
+            <Font name="System Bold" size="20.0" />
          </font>
          <padding>
             <Insets left="90.0" />
          </padding></Label>
-      <HBox layoutX="143.0" layoutY="111.0" prefHeight="186.0" prefWidth="315.0">
+      <HBox layoutX="62.0" layoutY="200.0" prefHeight="306.0" prefWidth="362.0">
          <children>
-            <VBox prefHeight="186.0" prefWidth="324.0">
+            <VBox prefHeight="306.0" prefWidth="354.0">
                <children>
-                  <Label text="Customer Info">
+                  <Label text="Customer Info" textFill="#f8f1f1">
                      <VBox.margin>
                         <Insets bottom="20.0" />
                      </VBox.margin>
                      <font>
-                        <Font name="System Bold Italic" size="13.0" />
+                        <Font name="System Bold Italic" size="20.0" />
                      </font>
                   </Label>
                   <HBox prefHeight="29.0" prefWidth="315.0">
                      <children>
-                        <CheckBox fx:id="commercial" mnemonicParsing="false" prefHeight="19.0" prefWidth="133.0" text="Commercial">
+                        <CheckBox fx:id="commercial" mnemonicParsing="false" prefHeight="25.0" prefWidth="213.0" text="Commercial" textFill="WHITE">
                            <HBox.margin>
                               <Insets bottom="10.0" />
                            </HBox.margin>
+                           <font>
+                              <Font size="18.0" />
+                           </font>
                         </CheckBox>
                      </children>
                   </HBox>
-                  <TextField fx:id="cust_name" prefHeight="26.0" prefWidth="236.0" promptText="Customer Name" text="Ali">
+                  <TextField fx:id="cust_name" prefHeight="40.0" prefWidth="305.0" promptText="Customer Name" text="Ali">
                      <VBox.margin>
-                        <Insets bottom="10.0" right="70.0" />
+                        <Insets bottom="10.0" />
                      </VBox.margin>
+                     <font>
+                        <Font size="18.0" />
+                     </font>
                   </TextField>
-                  <TextField fx:id="cust_id" prefHeight="26.0" prefWidth="236.0" promptText="Id Card / Company Reg Number" text="A305301">
+                  <TextField fx:id="cust_id" prefHeight="40.0" prefWidth="200.0" promptText="Id Card / Company Reg Number" text="A305301">
                      <VBox.margin>
-                        <Insets bottom="10.0" right="70.0" />
+                        <Insets bottom="10.0" />
                      </VBox.margin>
+                     <font>
+                        <Font size="18.0" />
+                     </font>
                   </TextField>
-                  <TextField fx:id="cust_contact" prefHeight="26.0" prefWidth="236.0" promptText="Contact Number" text="7866944">
+                  <TextField fx:id="cust_contact" prefHeight="40.0" prefWidth="200.0" promptText="Contact Number" text="7866944">
                      <VBox.margin>
-                        <Insets bottom="10.0" right="70.0" />
+                        <Insets bottom="10.0" />
                      </VBox.margin>
+                     <font>
+                        <Font size="18.0" />
+                     </font>
                   </TextField>
-                  <TextField fx:id="cust_email" prefHeight="26.0" prefWidth="236.0" promptText="Emial Address" text="ali@live.ocm">
+                  <TextField fx:id="cust_email" prefHeight="40.0" prefWidth="200.0" promptText="Emial Address" text="ali@live.ocm">
                      <VBox.margin>
-                        <Insets bottom="10.0" right="70.0" />
+                        <Insets bottom="10.0" />
                      </VBox.margin>
+                     <font>
+                        <Font size="18.0" />
+                     </font>
                   </TextField>
-                  <TextField fx:id="cust_address" prefHeight="26.0" prefWidth="213.0" promptText="Address" text="seyboo">
+                  <TextField fx:id="cust_address" prefHeight="40.0" prefWidth="200.0" promptText="Address" text="seyboo">
                      <VBox.margin>
-                        <Insets right="70.0" />
-                     </VBox.margin></TextField>
+                        <Insets />
+                     </VBox.margin>
+                     <font>
+                        <Font size="18.0" />
+                     </font></TextField>
                </children>
             </VBox>
          </children>
       </HBox>
-      <HBox layoutX="143.0" layoutY="386.0" prefHeight="161.0" prefWidth="315.0">
+      <Button layoutX="406.0" layoutY="646.0" mnemonicParsing="false" onAction="#saveCustomer" text="Save" />
+      <Button fx:id="reset" layoutX="468.0" layoutY="646.0" mnemonicParsing="false" onAction="#resetForm" text="Reset" />
+      <Button fx:id="back" layoutX="77.0" layoutY="48.0" mnemonicParsing="false" onAction="#back" text="Back" />
+      <HBox layoutX="484.0" layoutY="236.0" prefHeight="277.0" prefWidth="479.0">
          <children>
-            <VBox prefHeight="186.0" prefWidth="324.0">
+            <VBox prefHeight="277.0" prefWidth="341.0">
                <children>
-                  <Label text="Vehicle Info">
+                  <Label text="Vehicle Info" textFill="#f8f1f1">
                      <VBox.margin>
                         <Insets bottom="20.0" />
                      </VBox.margin>
                      <font>
-                        <Font name="System Bold Italic" size="13.0" />
+                        <Font name="System Bold Italic" size="20.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="model" prefHeight="26.0" prefWidth="236.0" promptText="Model" text="Honda">
+                  <TextField fx:id="model" prefHeight="40.0" prefWidth="200.0" promptText="Model" text="Honda">
                      <VBox.margin>
-                        <Insets bottom="10.0" right="70.0" />
+                        <Insets bottom="20.0" />
                      </VBox.margin>
+                     <font>
+                        <Font size="18.0" />
+                     </font>
                   </TextField>
-                  <TextField fx:id="veh_reg" prefHeight="26.0" prefWidth="236.0" promptText="Vehicle Registration Number" text="123">
+                  <TextField fx:id="veh_reg" prefHeight="40.0" prefWidth="200.0" promptText="Vehicle Registration Number" text="123">
                      <VBox.margin>
-                        <Insets bottom="10.0" right="70.0" />
+                        <Insets bottom="20.0" />
                      </VBox.margin>
+                     <font>
+                        <Font size="18.0" />
+                     </font>
                   </TextField>
-                  <TextField fx:id="chass_num" prefHeight="26.0" prefWidth="236.0" promptText="Chassis Number" text="4566">
+                  <TextField fx:id="chass_num" prefHeight="40.0" prefWidth="200.0" promptText="Chassis Number" text="4566">
                      <VBox.margin>
-                        <Insets bottom="10.0" right="70.0" />
+                        <Insets bottom="20.0" />
                      </VBox.margin>
+                     <font>
+                        <Font size="18.0" />
+                     </font>
                   </TextField>
-                  <TextField fx:id="reg_date" prefHeight="26.0" prefWidth="236.0" promptText="Registration Date" text="2020-01-01">
+                  <TextField fx:id="reg_date" prefHeight="40.0" prefWidth="200.0" promptText="Registration Date" text="2020-01-01">
                      <VBox.margin>
-                        <Insets bottom="10.0" right="70.0" />
+                        <Insets bottom="20.0" />
                      </VBox.margin>
+                     <font>
+                        <Font size="18.0" />
+                     </font>
                   </TextField>
                </children>
             </VBox>
          </children>
       </HBox>
-      <Button layoutX="152.0" layoutY="582.0" mnemonicParsing="false" onAction="#saveCustomer" text="Save" />
-      <Button layoutX="214.0" layoutY="582.0" mnemonicParsing="false" onAction="#resetForm" text="Reset" />
    </children>
 </AnchorPane>

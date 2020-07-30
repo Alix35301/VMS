@@ -2,6 +2,10 @@ package components;
 
 
 import java.io.FileOutputStream;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 /**
@@ -89,5 +93,27 @@ public class Jobsheet {
         public String getJobStatus() { return jobStatus; }
 
         public void setJobStatus(String jobStatus) {this.jobStatus = jobStatus; }
+    }
+
+    public static ArrayList<Job> getJobs(String jobSheetId){
+        Connection conn = Helpers.getConnection();
+        ArrayList<Job> jobs = new ArrayList<>();
+        String sql = "SELECT * FROM VMS.JOBS WHERE jobsheetId =?";
+        try {
+            PreparedStatement p = conn.prepareStatement(sql);
+            p.setString(1, jobSheetId);
+            ResultSet resultSet = p.executeQuery();
+            Job job = new Job();
+            while(resultSet.next()){
+                job.setJobSummmery(resultSet.getString(2));
+                job.setJobDesc(resultSet.getString(3));
+                job.setJobStatus(resultSet.getString(4));
+                jobs.add(job);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+return jobs;
     }
 }

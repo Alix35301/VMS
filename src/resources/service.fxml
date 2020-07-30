@@ -3,17 +3,24 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="800.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ServiceAdvisorController">
+<AnchorPane fx:id="rootPane" prefHeight="800.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ServiceAdvisorController">
    <children>
-      <Label layoutX="316.0" layoutY="136.0" text="Welcome Service Advisor" textAlignment="CENTER">
-         <font>
-            <Font size="29.0" />
-         </font></Label>
-      <Button fx:id="btnnewcust" layoutX="435.0" layoutY="276.0" mnemonicParsing="false" onAction="#register" text="Add New Customer" />
-      <Button fx:id="btncreatejobsheet" layoutX="442.0" layoutY="390.0" mnemonicParsing="false" onAction="#createJobSheet" text="Create Job Sheet" />
-      <Button fx:id="btnpayments" layoutX="463.0" layoutY="448.0" mnemonicParsing="false" onAction="#payment" text="Payments" />
-      <Button fx:id="btnaddvehicle" layoutX="442.0" layoutY="332.0" mnemonicParsing="false" onAction="#register_vehicle" text="Add New Vehicle" />
+      <Button fx:id="btnnewcust" layoutX="350.0" layoutY="270.0" mnemonicParsing="false" onAction="#register" prefHeight="40.0" prefWidth="300.0" text="Add New Customer" />
+      <Button fx:id="btncreatejobsheet" layoutX="350.0" layoutY="415.0" mnemonicParsing="false" onAction="#createJobSheet" prefHeight="40.0" prefWidth="300.0" text="Create Job Sheet" />
+      <Button fx:id="btnpayments" layoutX="350.0" layoutY="486.0" mnemonicParsing="false" onAction="#payment" prefHeight="40.0" prefWidth="300.0" text="Payments" />
+      <Button fx:id="btnaddvehicle" layoutX="351.0" layoutY="340.0" mnemonicParsing="false" onAction="#register_vehicle" prefHeight="40.0" prefWidth="300.0" text="Add New Vehicle" />
+      <Button fx:id="logout" layoutX="350.0" layoutY="703.0" mnemonicParsing="false" onAction="#logout" prefHeight="40.0" prefWidth="300.0" styleClass="logout" stylesheets="@style.css" text="Logout" />
+      <HBox alignment="CENTER" layoutY="128.0" prefHeight="100.0" prefWidth="1000.0">
+         <children>
+            <Label fx:id="welcome" alignment="CENTER" text="Welcome Service Advisor" textAlignment="CENTER" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="40.0" />
+               </font>
+            </Label>
+         </children>
+      </HBox>
    </children>
 </AnchorPane>

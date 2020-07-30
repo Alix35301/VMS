@@ -7,17 +7,28 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
+
+import java.io.IOException;
 
 /**
  * @author ali
  * @created_on 7/28/20
  */
 public class SearchTwitterController {
+    @FXML
+    private AnchorPane rootPane;
 
     @FXML
     private TextField searchTxtF;
@@ -107,6 +118,24 @@ public class SearchTwitterController {
             .setOAuthAccessTokenSecret("WqPsOC8iEFuARHa9GKS6PiGMmEkyH1JxNYf7psDjQMhgH");
         TwitterFactory tf = new TwitterFactory(cb.build());
         return tf.getInstance();
+
+    }
+
+    public void logout(ActionEvent event) throws IOException {
+
+        AlertDiaglog.infoBox("You have successfully logged out.","Loggout", Alert.AlertType.INFORMATION);
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/resources/Login.fxml"));
+        AnchorPane pane = fxmlLoader.load();
+        rootPane.getChildren().setAll(pane);
+
+    }
+
+    public void back(ActionEvent event) throws IOException {
+
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/resources/analyst.fxml"));
+        AnchorPane pane = fxmlLoader.load();
+        rootPane.getChildren().setAll(pane);
+
 
     }
 
